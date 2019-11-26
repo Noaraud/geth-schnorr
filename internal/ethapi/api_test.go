@@ -13,13 +13,13 @@ import (
 	
 
 	//"github.com/ethereum/go-ethereum/eth"
-	"github.com/Noaraud/go-ethereum-schnorr/node"
+	"github.com/ethereum/go-ethereum/node"
 	//"github.com/tyler-smith/go-bip39"
 	
 )
 
 
-func TestHoge(t *testing.T) {
+func TestHoge(t *testing.T) {T
 	
 	//var tx *Transaction
 	//var ethDefaultConf = eth.DefaultConfig
