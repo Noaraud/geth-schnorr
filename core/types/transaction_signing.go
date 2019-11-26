@@ -25,6 +25,26 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/params"
+	"github.com/btcsuite/btcd/btcec"
+	"crypto/elliptic"
+)
+
+
+var (
+	// Curve is a KoblitzCurve which implements secp256k1.
+	Curve = btcec.S256()
+	// One holds a big integer of 1
+	One = new(big.Int).SetInt64(1)
+	// Two holds a big integer of 2
+	Two = new(big.Int).SetInt64(2)
+	// Three holds a big integer of 3
+	Three = new(big.Int).SetInt64(3)
+	// Four holds a big integer of 4
+	Four = new(big.Int).SetInt64(4)
+	// Seven holds a big integer of 7
+	Seven = new(big.Int).SetInt64(7)
+	// N2 holds a big integer of N-2
+	N2 = new(big.Int).Sub(Curve.N, Two)
 )
 
 var (
@@ -314,6 +334,40 @@ func deriveChainId(v *big.Int) *big.Int {
 	}
 	v = new(big.Int).Sub(v, big.NewInt(35))
 	return v.Div(v, big.NewInt(2))
+}
+
+
+
+func Unmarshal(curve elliptic.Curve, data []byte) (x, y *big.Int) {
+	byteLen := (curve.Params().BitSize + 7) >> 3
+	if (data[0] &^ 1) != 2 {
+		return
+	}
+	if len(data) != 1+byteLen {
+		return
+	}
+
+	x0 := new(big.Int).SetBytes(data[1 : 1+byteLen])
+	P := curve.Params().P
+	ySq := new(big.Int)
+	ySq.Exp(x0, Three, P)
+	ySq.Add(ySq, Seven)
+	ySq.Mod(ySq, P)
+	y0 := new(big.Int)
+	P1 := new(big.Int).Add(P, One)
+	d := new(big.Int).Mod(P1, Four)
+	P1.Sub(P1, d)
+	P1.Div(P1, Four)
+	y0.Exp(ySq, P1, P)
+
+	if new(big.Int).Exp(y0, Two, P).Cmp(ySq) != 0 {
+		return
+	}
+	if y0.Bit(0) != uint(data[0]&1) {
+		y0.Sub(P, y0)
+	}
+	x, y = x0, y0
+	return
 }
 
 
