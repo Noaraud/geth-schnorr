@@ -122,6 +122,18 @@ func New(conf *Config) (*Node, error) {
 	}, nil
 }
 
+
+func New2(n *Node) (*ServiceContext, error) {
+	// Copy config and resolve the datadir so future changes to the current
+	// working directory don't affect the node.
+	return &ServiceContext{
+		config:         n.config,
+		services:       make(map[reflect.Type]Service),
+		EventMux:       n.eventmux,
+		AccountManager: n.accman,
+	}, nil
+}
+
 // Close stops the Node and releases resources acquired in
 // Node constructor New.
 func (n *Node) Close() error {
@@ -247,6 +259,7 @@ func (n *Node) Start() error {
 	n.services = services
 	n.server = running
 	n.stop = make(chan struct{})
+	//
 	return nil
 }
 
@@ -662,3 +675,6 @@ func (n *Node) apis() []rpc.API {
 		},
 	}
 }
+
+
+
