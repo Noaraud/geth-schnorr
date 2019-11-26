@@ -21,7 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
-
+	"github.com/hbakhtiyor/schnorr"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/params"
@@ -124,7 +124,9 @@ func (s EIP155Signer) Equal(s2 Signer) bool {
 
 var big8 = big.NewInt(8)
 
-func (s EIP155Signer) Sender(tx *Transaction) (common.Address, error) {
+
+//オリジナルのSender 名前をSender()に書き換えて使うこと
+func (s EIP155Signer) Sender_original(tx *Transaction) (common.Address, error) {
 	if !tx.Protected() {
 		return HomesteadSigner{}.Sender(tx)
 	}
@@ -135,6 +137,30 @@ func (s EIP155Signer) Sender(tx *Transaction) (common.Address, error) {
 	V.Sub(V, big8)
 	return recoverPlain(s.Hash(tx), tx.data.R, tx.data.S, V, true)
 }
+
+//以下Schnorr用に書き換えたSender()
+func (s EIP155Signer) Sender(tx *Transaction) (common.Address, error) {
+	if !tx.Protected() {
+		return HomesteadSigner{}.Sender(tx)
+	}
+	if tx.ChainId().Cmp(s.chainId) != 0 {
+		return common.Address{}, ErrInvalidChainId
+	}
+
+	hoge := big.NewInt(44)
+	if tx.data.V == hoge {
+		//Schnorrの処理を入れる
+		V := new(big.Int).Sub(tx.data.V, s.chainIdMul)
+		V.Sub(V, big8)
+		return  recoverPlain(s.Hash(tx), tx.data.R, tx.data.S, V, true)
+		//本当はrecoverPlainSchnorr
+	} else {
+		V := new(big.Int).Sub(tx.data.V, s.chainIdMul)
+		V.Sub(V, big8)
+		return recoverPlain(s.Hash(tx), tx.data.R, tx.data.S, V, true)
+	}
+}
+
 
 // SignatureValues returns signature values. This signature
 // needs to be in the [R || S || V] format where V is 0 or 1.
@@ -246,6 +272,37 @@ func recoverPlain(sighash common.Hash, R, S, Vb *big.Int, homestead bool) (commo
 	return addr, nil
 }
 
+
+
+
+func recoverPlainSchnorr(sighash common.Hash, R, S *big.Int, Pubkey [33]byte) (common.Address, error) {
+	//オリジナルのrecoverPlainSchnorrに書かれていたVの処理を省略
+	//Vは使わない
+
+	// 署名r, sをくっつける
+	r, s := R.Bytes(), S.Bytes()
+	sig := [64]byte{}
+	copy(sig[:32], r)
+	copy(sig[32:], s)
+	
+
+	// Schnorrの署名検証
+	result, err := schnorr.Verify(Pubkey, sighash, sig)
+	if result != true {
+		return common.Address{}, err
+	}
+
+	//検証が通ったら、公開鍵からアドレスを生成
+	Px, Py := Unmarshal(Curve, Pubkey[:])
+	px, py := Px.Bytes(), Py.Bytes()
+	pub := [64]byte{}
+	copy(pub[:32], px)
+	copy(pub[32:], py)
+	var addr common.Address
+	copy(addr[:], crypto.Keccak256(pub[1:])[12:])
+	return addr, nil
+}
+
 // deriveChainId derives the chain id from the given v parameter
 func deriveChainId(v *big.Int) *big.Int {
 	if v.BitLen() <= 64 {
@@ -258,3 +315,6 @@ func deriveChainId(v *big.Int) *big.Int {
 	v = new(big.Int).Sub(v, big.NewInt(35))
 	return v.Div(v, big.NewInt(2))
 }
+
+
+

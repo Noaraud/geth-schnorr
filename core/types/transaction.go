@@ -43,6 +43,7 @@ type Transaction struct {
 	from atomic.Value
 }
 
+//公開鍵の格納場所としてPubkeyを追加
 type txdata struct {
 	AccountNonce uint64          `json:"nonce"    gencodec:"required"`
 	Price        *big.Int        `json:"gasPrice" gencodec:"required"`
@@ -50,6 +51,7 @@ type txdata struct {
 	Recipient    *common.Address `json:"to"       rlp:"nil"` // nil means contract creation
 	Amount       *big.Int        `json:"value"    gencodec:"required"`
 	Payload      []byte          `json:"input"    gencodec:"required"`
+	Pubkey       *big.Int        `json:"pubkey"`		 
 
 	// Signature values
 	V *big.Int `json:"v" gencodec:"required"`
@@ -100,6 +102,7 @@ func newTransaction(nonce uint64, to *common.Address, amount *big.Int, gasLimit 
 	if gasPrice != nil {
 		d.Price.Set(gasPrice)
 	}
+
 
 	return &Transaction{data: d}
 }
@@ -417,3 +420,4 @@ func (m Message) Gas() uint64          { return m.gasLimit }
 func (m Message) Nonce() uint64        { return m.nonce }
 func (m Message) Data() []byte         { return m.data }
 func (m Message) CheckNonce() bool     { return m.checkNonce }
+

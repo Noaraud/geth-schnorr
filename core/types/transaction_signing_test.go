@@ -19,10 +19,12 @@ package types
 import (
 	"math/big"
 	"testing"
-
+	"encoding/hex"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/hbakhtiyor/schnorr"
+	
 )
 
 func TestEIP155Signing(t *testing.T) {
@@ -30,7 +32,7 @@ func TestEIP155Signing(t *testing.T) {
 	addr := crypto.PubkeyToAddress(key.PublicKey)
 
 	signer := NewEIP155Signer(big.NewInt(18))
-	tx, err := SignTx(NewTransaction(0, addr, new(big.Int), 0, new(big.Int), nil), signer, key)
+	tx, err := SignTx(NewTransaction(0, addr, new(big.Int), 0, new(big.Int), nil), signer, key,)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -42,6 +44,7 @@ func TestEIP155Signing(t *testing.T) {
 	if from != addr {
 		t.Errorf("exected from and address to be equal. Got %x want %x", from, addr)
 	}
+	t.Log("")
 }
 
 func TestEIP155ChainId(t *testing.T) {
@@ -136,3 +139,182 @@ func TestChainId(t *testing.T) {
 		t.Error("expected no error")
 	}
 }
+
+//11月14日やったこと
+//1, txdata structに公開鍵の格納先Pubkeyを追加
+//2, typesにSchnorr.goを追加
+//3, TestHoge内でPubkeyに直接公開鍵を追加し、格納
+//4, 金曜はドキュメントまとめつつ、SendTransactionがどう動くのかを知りたいかも？
+func TestHoge2(t *testing.T) {
+	key, _ := crypto.GenerateKey()
+	addr := crypto.PubkeyToAddress(key.PublicKey)
+
+	signer := NewEIP155Signer(big.NewInt(18))
+	NonSig := NewTransaction(0, addr, new(big.Int), 0, new(big.Int), nil)
+	
+
+	//----------------------------------Schnorr用Transactionの作成---------
+
+
+	//公開鍵はBitcoinのx圧縮形式(今のところ)
+	pk, _ := hex.DecodeString("02DFF1D77F2A671C5F36183726DB2341BE58FEAE1DA2DECED843240F7B502BA659")
+	
+	//Schnorr.goのUnmarshalを使って公開鍵(x)を導出
+	Px, _ := Unmarshal(Curve, pk)
+	t.Log(Px)
+	//導出したPx(32byte)をTxのPubkeyに格納
+	NonSig.data.Pubkey = Px
+	t.Log(NonSig.data.Pubkey)
+	tx, err := SignTx(NonSig, signer, key,)
+	t.Log(tx)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+
+
+
+
+	//このあとやること
+	//1, Sender内部でSchnorrかそうでないかの見極めをどうするか
+	// →　どうやらVをyチェックしている関数はない様子
+	// →　Vのデフォルト値は27 or 28
+	// →　V = chainID * 2 + 8 + (27 or 28)
+	// →　Sender内部のCmp()は気になる
+
+	//2, Sender内での検証処理追加
+	//3, Txの署名部分にとりあえず署名ぶち込んで署検証してみる(r, s, v, hash)
+
+
+	from, err := Sender(signer, tx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if from != addr {
+		t.Errorf("exected from and address to be equal. Got %x want %x", from, addr)
+	}
+	t.Log(from)
+	t.Log(tx.data.V)
+	
+}
+
+
+
+
+
+func TestHoge3(t *testing.T) {
+	key, _ := crypto.GenerateKey()
+	addr := crypto.PubkeyToAddress(key.PublicKey)
+
+	signer := NewEIP155Signer(big.NewInt(18))
+	NonSig := NewTransaction(0, addr, new(big.Int), 0, new(big.Int), nil)
+	
+
+	//----------------------------------Schnorr用Transactionの作成---------
+
+
+	//公開鍵はBitcoinのx圧縮形式(今のところ)
+	pk, _ := hex.DecodeString("02DFF1D77F2A671C5F36183726DB2341BE58FEAE1DA2DECED843240F7B502BA659")
+	
+	//Schnorr.goのUnmarshalを使って公開鍵(x)を導出
+	Px, _ := Unmarshal(Curve, pk)
+	t.Log(Px)
+	//導出したPx(32byte)をTxのPubkeyに格納
+	NonSig.data.Pubkey = Px
+	t.Log(NonSig.data.Pubkey)
+	tx, err := SignTx(NonSig, signer, key,)
+	t.Log(tx)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	//このあとやること
+	//1, Sender内部でSchnorrかそうでないかの見極めをどうするか
+	// →　どうやらVをyチェックしている関数はない様子
+	// →　Vのデフォルト値は27 or 28
+	// →　V = chainID * 2 + 8 + (27 or 28)
+	// →　Sender内部のCmp()は気になる
+
+	//2, Sender内での検証処理追加
+	//3, Txの署名部分にとりあえず署名ぶち込んで署検証してみる(r, s, v, hash)
+
+
+	from, err := Sender(signer, tx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if from != addr {
+		t.Errorf("exected from and address to be equal. Got %x want %x", from, addr)
+	}
+	t.Log(from)
+	t.Log(signer.Hash(tx))
+	
+}
+
+
+
+
+
+
+func TestRecoverSchnorr(t *testing.T) {
+	//----------------------------------Schnorr用Transactionの作成---------
+	var publicKey [33]byte
+	//公開鍵はBitcoinのx圧縮形式(今のところ)
+	pk, _ := hex.DecodeString("02DFF1D77F2A671C5F36183726DB2341BE58FEAE1DA2DECED843240F7B502BA659")
+	copy(publicKey[:], pk)
+	key, _ := new(big.Int).SetString("B7E151628AED2A6ABF7158809CF4F3C762E7160F38B4DA56A784D9045190CFEF", 16)
+	
+	
+	//Schnorr.goのUnmarshalを使って公開鍵(x)を導出　→　Schnorr検証に使うための公開鍵
+	Px, Py := Unmarshal(Curve, pk)
+
+	//公開鍵(64byte)を作成
+	px, py := Px.Bytes(), Py.Bytes()
+	Pubkey := [64]byte{}
+	copy(Pubkey[:32], px)
+	copy(Pubkey[32:], py)
+	
+	//公開鍵(64byte)からアドレスを生成　→　テスト内での検証に使う
+	var addr common.Address
+	copy(addr[:], crypto.Keccak256(Pubkey[1:])[12:])
+
+
+	signer := NewEIP155Signer(big.NewInt(18))
+	NonSigned := NewTransaction(0, addr, new(big.Int), 0, new(big.Int), nil)
+	
+
+	
+	
+	
+	//Schnorrの署名を導出。
+	signature, err := schnorr.Sign(key, signer.Hash(NonSigned))
+	if err != nil {
+		t.Errorf("The signing is failed: %v\n", err)
+	  }
+
+	//署名のr, s, v(big.Int)と検証に使う公開鍵(big.Int)をtxにそれぞれ格納
+	NonSigned.data.Pubkey = Px
+	NonSigned.data.R = new(big.Int).SetBytes(signature[:32])
+	NonSigned.data.S = new(big.Int).SetBytes(signature[32:])
+	NonSigned.data.V = big.NewInt(44)
+
+
+
+
+	recoveraddr, err := recoverPlainSchnorr(signer.Hash(NonSigned), NonSigned.data.R, NonSigned.data.S, publicKey)
+	if err != nil {
+		t.Errorf("The Signature is invalid: %v\n", err)
+	  }
+
+
+	if recoveraddr == addr {
+		t.Errorf("exected from and address to be equal. Got %x want %x", recoveraddr, addr)
+	}
+
+	//
+t.Log(recoveraddr, addr)
+
+}
+
