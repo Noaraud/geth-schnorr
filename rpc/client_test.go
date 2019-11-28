@@ -177,11 +177,13 @@ func testClientCancel(transport string, t *testing.T) {
 				// and cancel it later.
 				ctx, cancel = context.WithCancel(context.Background())
 				time.AfterFunc(timeout, cancel)
+				t.Log(ctx)
 			} else {
 				// For the other half, create a context with a deadline instead. This is
 				// different because the context deadline is used to set the socket write
 				// deadline.
 				ctx, cancel = context.WithTimeout(context.Background(), timeout)
+				t.Log(ctx)
 			}
 			// Now perform a call with the context.
 			// The key thing here is that no call will ever complete successfully.
@@ -189,9 +191,12 @@ func testClientCancel(transport string, t *testing.T) {
 			err := client.CallContext(ctx, nil, "test_sleep", sleepTime)
 			if err != nil {
 				log.Debug(fmt.Sprint("got expected error:", err))
+			} else if err == nil {
+				t.Log(ctx)
 			} else {
 				t.Errorf("no error for call with %v wait time", timeout)
 			}
+			t.Log(ctx)
 			cancel()
 		}
 	}
@@ -200,6 +205,7 @@ func testClientCancel(transport string, t *testing.T) {
 		go caller(i)
 	}
 	wg.Wait()
+	
 }
 
 func TestClientSubscribeInvalidArg(t *testing.T) {

@@ -22,7 +22,7 @@ import (
 	"encoding/hex"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
-	//"github.com/ethereum/go-ethereum/rlp"
+	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/hbakhtiyor/schnorr"
 	"github.com/btcsuite/btcd/btcec"
 	"crypto/elliptic"
