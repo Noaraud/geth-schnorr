@@ -172,7 +172,7 @@ func (s EIP155Signer) Sender(tx *Transaction) (common.Address, error) {
 		//Schnorrの処理を入れる
 		V := new(big.Int).Sub(tx.data.V, s.chainIdMul)
 		V.Sub(V, big8)
-		return  recoverPlain(s.Hash(tx), tx.data.R, tx.data.S, V, true)
+		return  recoverPlainSchnorr(s.Hash(tx), tx.data.R, tx.data.S, tx.data.Pubkey)
 		//本当はrecoverPlainSchnorr
 	} else {
 		V := new(big.Int).Sub(tx.data.V, s.chainIdMul)
@@ -226,7 +226,15 @@ func (hs HomesteadSigner) SignatureValues(tx *Transaction, sig []byte) (r, s, v 
 }
 
 func (hs HomesteadSigner) Sender(tx *Transaction) (common.Address, error) {
-	return recoverPlain(hs.Hash(tx), tx.data.R, tx.data.S, tx.data.V, true)
+	hoge := big.NewInt(44)
+	if tx.data.V == hoge {
+		//Schnorrの処理を入れる
+		return  recoverPlainSchnorr(hs.Hash(tx), tx.data.R, tx.data.S, tx.data.Pubkey)
+		//本当はrecoverPlainSchnorr
+	} else {
+		return recoverPlain(hs.Hash(tx), tx.data.R, tx.data.S, tx.data.V, true)
+	}
+	//return recoverPlain(hs.Hash(tx), tx.data.R, tx.data.S, tx.data.V, true)
 }
 
 type FrontierSigner struct{}
@@ -262,7 +270,15 @@ func (fs FrontierSigner) Hash(tx *Transaction) common.Hash {
 }
 
 func (fs FrontierSigner) Sender(tx *Transaction) (common.Address, error) {
-	return recoverPlain(fs.Hash(tx), tx.data.R, tx.data.S, tx.data.V, false)
+	hoge := big.NewInt(44)
+	if tx.data.V == hoge {
+		//Schnorrの処理を入れる
+		return  recoverPlainSchnorr(fs.Hash(tx), tx.data.R, tx.data.S, tx.data.Pubkey)
+		//本当はrecoverPlainSchnorr
+	} else {
+		return recoverPlain(fs.Hash(tx), tx.data.R, tx.data.S, tx.data.V, true)
+	}
+	//return recoverPlain(fs.Hash(tx), tx.data.R, tx.data.S, tx.data.V, false)
 }
 
 func recoverPlain(sighash common.Hash, R, S, Vb *big.Int, homestead bool) (common.Address, error) {

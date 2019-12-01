@@ -796,6 +796,7 @@ func (f *unencodableDecoder) DecodeRLP(s *Stream) error {
 
 func TestDecoderFunc(t *testing.T) {
 	var x func()
+	
 	if err := DecodeBytes([]byte{0xC0}, (*unencodableDecoder)(&x)); err != nil {
 		t.Fatal(err)
 	}
