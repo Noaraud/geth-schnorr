@@ -14,7 +14,7 @@ ethdir="$workspace/src/github.com/Noaraud"
 if [ ! -L "$ethdir/geth-schnorr" ]; then
     mkdir -p "$ethdir"
     cd "$ethdir"
-    ln -s ../../../../../. go-ethereum
+    ln -s ../../../../../. geth-schnorr
     cd "$root"
 fi
 
