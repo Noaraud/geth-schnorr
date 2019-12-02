@@ -21,8 +21,8 @@ import (
 	"container/heap"
 	"errors"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/Noaraud/geth-schnorr/common"
+	"github.com/Noaraud/geth-schnorr/rlp"
 )
 
 // Iterator is a key-value trie iterator that traverses a Trie.

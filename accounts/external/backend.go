@@ -21,16 +21,16 @@ import (
 	"math/big"
 	"sync"
 
-	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/event"
-	"github.com/ethereum/go-ethereum/internal/ethapi"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/rpc"
-	"github.com/ethereum/go-ethereum/signer/core"
+	"github.com/Noaraud/geth-schnorr"
+	"github.com/Noaraud/geth-schnorr/accounts"
+	"github.com/Noaraud/geth-schnorr/common"
+	"github.com/Noaraud/geth-schnorr/common/hexutil"
+	"github.com/Noaraud/geth-schnorr/core/types"
+	"github.com/Noaraud/geth-schnorr/event"
+	"github.com/Noaraud/geth-schnorr/internal/ethapi"
+	"github.com/Noaraud/geth-schnorr/log"
+	"github.com/Noaraud/geth-schnorr/rpc"
+	"github.com/Noaraud/geth-schnorr/signer/core"
 )
 
 type ExternalBackend struct {

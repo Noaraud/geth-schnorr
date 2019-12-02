@@ -24,16 +24,16 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/bitutil"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/rawdb"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/rlp"
-	"github.com/ethereum/go-ethereum/trie"
+	"github.com/Noaraud/geth-schnorr/common"
+	"github.com/Noaraud/geth-schnorr/common/bitutil"
+	"github.com/Noaraud/geth-schnorr/core"
+	"github.com/Noaraud/geth-schnorr/core/rawdb"
+	"github.com/Noaraud/geth-schnorr/core/types"
+	"github.com/Noaraud/geth-schnorr/ethdb"
+	"github.com/Noaraud/geth-schnorr/log"
+	"github.com/Noaraud/geth-schnorr/params"
+	"github.com/Noaraud/geth-schnorr/rlp"
+	"github.com/Noaraud/geth-schnorr/trie"
 )
 
 // IndexerConfig includes a set of configs for chain indexers.

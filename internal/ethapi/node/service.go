@@ -20,12 +20,12 @@ import (
 	"path/filepath"
 	"reflect"
 
-	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/core/rawdb"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/event"
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/Noaraud/geth-schnorr/accounts"
+	"github.com/Noaraud/geth-schnorr/core/rawdb"
+	"github.com/Noaraud/geth-schnorr/ethdb"
+	"github.com/Noaraud/geth-schnorr/event"
+	"github.com/Noaraud/geth-schnorr/p2p"
+	"github.com/Noaraud/geth-schnorr/rpc"
 )
 
 // ServiceContext is a collection of service independent options inherited from

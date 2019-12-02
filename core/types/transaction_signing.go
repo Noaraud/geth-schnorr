@@ -22,9 +22,9 @@ import (
 	"fmt"
 	"math/big"
 	"github.com/hbakhtiyor/schnorr"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/Noaraud/geth-schnorr/common"
+	"github.com/Noaraud/geth-schnorr/crypto"
+	"github.com/Noaraud/geth-schnorr/params"
 	"github.com/btcsuite/btcd/btcec"
 	"crypto/elliptic"
 )

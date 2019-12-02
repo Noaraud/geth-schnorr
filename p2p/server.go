@@ -29,17 +29,17 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/mclock"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/event"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/p2p/discover"
-	"github.com/ethereum/go-ethereum/p2p/discv5"
-	"github.com/ethereum/go-ethereum/p2p/enode"
-	"github.com/ethereum/go-ethereum/p2p/enr"
-	"github.com/ethereum/go-ethereum/p2p/nat"
-	"github.com/ethereum/go-ethereum/p2p/netutil"
+	"github.com/Noaraud/geth-schnorr/common"
+	"github.com/Noaraud/geth-schnorr/common/mclock"
+	"github.com/Noaraud/geth-schnorr/crypto"
+	"github.com/Noaraud/geth-schnorr/event"
+	"github.com/Noaraud/geth-schnorr/log"
+	"github.com/Noaraud/geth-schnorr/p2p/discover"
+	"github.com/Noaraud/geth-schnorr/p2p/discv5"
+	"github.com/Noaraud/geth-schnorr/p2p/enode"
+	"github.com/Noaraud/geth-schnorr/p2p/enr"
+	"github.com/Noaraud/geth-schnorr/p2p/nat"
+	"github.com/Noaraud/geth-schnorr/p2p/netutil"
 )
 
 const (

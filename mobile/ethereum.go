@@ -21,8 +21,8 @@ package geth
 import (
 	"errors"
 
-	ethereum "github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/common"
+	ethereum "github.com/Noaraud/geth-schnorr"
+	"github.com/Noaraud/geth-schnorr/common"
 )
 
 // Subscription represents an event subscription where events are

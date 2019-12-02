@@ -12,7 +12,7 @@ import (
 	
 	
 
-	//"github.com/ethereum/go-ethereum/eth"
+	//"github.com/Noaraud/geth-schnorr/eth"
 	"./node"
 	//"github.com/tyler-smith/go-bip39"
 	
