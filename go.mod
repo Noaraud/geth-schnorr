@@ -1,4 +1,4 @@
-module github.com/Noarad/geth-schnorr
+module github.com/Noaraud/geth-schnorr
 
 go 1.13
 
