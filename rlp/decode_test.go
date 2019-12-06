@@ -26,6 +26,10 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"sync/atomic"
+	"github.com/Noaraud/geth-schnorr/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	
 )
 
 func TestStreamKind(t *testing.T) {
@@ -802,6 +806,350 @@ func TestDecoderFunc(t *testing.T) {
 	}
 	x()
 }
+//rlp.DecodeBytes()をテスト
+func TestDecoderFunc2(t *testing.T) {
+//公開鍵の格納場所としてPubkeyを追加
+type txdata struct {
+	AccountNonce uint64          `json:"nonce"    gencodec:"required"`
+	Price        *big.Int        `json:"gasPrice" gencodec:"required"`
+	GasLimit     uint64          `json:"gas"      gencodec:"required"`
+	Recipient    *common.Address `json:"to"       rlp:"nil"` // nil means contract creation
+	Amount       *big.Int        `json:"value"    gencodec:"required"`
+	Payload      []byte          `json:"input"    gencodec:"required"`
+	Pubkey       [33]byte        `json:"pubkey"`		 
+
+	// Signature values
+	V *big.Int `json:"v" gencodec:"required"`
+	R *big.Int `json:"r" gencodec:"required"`
+	S *big.Int `json:"s" gencodec:"required"`
+
+	// This is only used when marshaling to JSON.
+	Hash *common.Hash `json:"hash" rlp:"-"`
+	}
+
+	type Transaction struct {
+		data txdata
+		// caches
+		hash atomic.Value
+		size atomic.Value
+		from atomic.Value
+	}
+	
+	
+	tx := new(Transaction)
+	encodedTx, err := hexutil.Decode("0xf8688080834c4b4094e99259149c60f7f5fdb5e2b236303dfce23867a08829a2241af62c0000801ca0a0dd5b8c525ab2d66ca7e5723445f749062745a80c697544ecffe3059d381b8fa050921c7cf229e10f7956de0466b64fb300aa84f2fece0ab9fc7a3cc0ba284cc9")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := DecodeBytes(encodedTx, tx); err != nil {
+		t.Fatal(err)
+	}
+	
+}
+
+//rlp.Decodeをテスト
+func TestDecodeSchnorr(t *testing.T) {
+
+	type txdata struct {
+		AccountNonce uint64          `json:"nonce"    gencodec:"required"`
+		Price        *big.Int        `json:"gasPrice" gencodec:"required"`
+		GasLimit     uint64          `json:"gas"      gencodec:"required"`
+		Recipient    *common.Address `json:"to"       rlp:"nil"` // nil means contract creation
+		Amount       *big.Int        `json:"value"    gencodec:"required"`
+		Payload      []byte          `json:"input"    gencodec:"required"`
+		Pubkey       [33]byte        `json:"pubkey"`		 
+	
+		// Signature values
+		V *big.Int `json:"v" gencodec:"required"`
+		R *big.Int `json:"r" gencodec:"required"`
+		S *big.Int `json:"s" gencodec:"required"`
+	
+		// This is only used when marshaling to JSON.
+		Hash *common.Hash `json:"hash" rlp:"-"`
+	}
+	
+	type Transaction struct {
+		data txdata
+		// caches
+		hash atomic.Value
+		size atomic.Value
+		from atomic.Value
+	}
+
+
+	val := new(Transaction)
+	b, err := hexutil.Decode("0xf8688080834c4b4094e99259149c60f7f5fdb5e2b236303dfce23867a08829a2241af62c0000801ca0a0dd5b8c525ab2d66ca7e5723445f749062745a80c697544ecffe3059d381b8fa050921c7cf229e10f7956de0466b64fb300aa84f2fece0ab9fc7a3cc0ba284cc9")
+	if err != nil {
+		t.Fatal(err)
+	}
+	
+	r := bytes.NewReader(b)
+
+	stream := streamPool.Get().(*Stream)
+	defer streamPool.Put(stream)
+	stream.Reset(r, uint64(len(b)))
+	//if err := stream.Decode(val); err != nil {
+	//	t.Fatal(err)
+	//}
+	
+	//以下Decode内での処理のテスト
+	rval := reflect.ValueOf(val)
+	rtyp := rval.Type()
+	
+
+	if rtyp.Kind() != reflect.Ptr {
+		t.Errorf("errNoPointer")
+	}
+
+	if rval.IsNil() {
+		t.Errorf("errDecodeIntoNil")
+	}
+
+	decoder, err := cachedDecoder(rtyp.Elem())
+	if err != nil {
+		t.Errorf("err")
+	}
+
+	//typ := rtyp.Elem()
+
+	//re_cachedType := cachedTypeInfo(rtyp.Elem(), tags{})
+
+	//if len(stream.stack) == 0 {
+	//	t.Errorf("stream.stack length is short")
+	//}
+
+	//tos := stream.stack[len(stream.stack)-1]
+	//if tos.pos != tos.size {
+	//	t.Fatal(tos.pos)
+	//	t.Fatal(tos.size)
+	//}
+	
+
+	
+	//err = stream.ListEnd()
+	//if err != nil {
+	//	t.Fatal(err)
+	//}
+
+
+	//err = wrapStreamError(stream.ListEnd(), typ)
+	//if err != nil {
+	//	t.Fatal(err)
+	//}
+
+	//ListEndErrorのチェック
+	//err = stream.ListEnd() 
+	//if err != nil {
+		//err = wrapStreamError(err, typ)
+	//	t.Fatal(err)
+	//}
+
+	//ListEndの中身の処理のチェック
+	//if len(stream.stack) == 0 {
+		//t.Errorf("1")
+		//return errNotInList
+	//}
+	//stream.stackをみると空になっている
+	//通常のtransactionの場合のstackを確認
+	
+	
+
+
+	err = decoder(stream, rval.Elem())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	
+	
+		
+	
+
+	
+
+
+	
+}
+
+
+
+func TestMakeDecFunc(t *testing.T) {
+
+	type txdata struct {
+		AccountNonce uint64          `json:"nonce"    gencodec:"required"`
+		Price        *big.Int        `json:"gasPrice" gencodec:"required"`
+		GasLimit     uint64          `json:"gas"      gencodec:"required"`
+		Recipient    *common.Address `json:"to"       rlp:"nil"` // nil means contract creation
+		Amount       *big.Int        `json:"value"    gencodec:"required"`
+		Payload      []byte          `json:"input"    gencodec:"required"`
+		Pubkey       [33]byte        `json:"pubkey"`		 
+	
+		// Signature values
+		V *big.Int `json:"v" gencodec:"required"`
+		R *big.Int `json:"r" gencodec:"required"`
+		S *big.Int `json:"s" gencodec:"required"`
+	
+		// This is only used when marshaling to JSON.
+		Hash *common.Hash `json:"hash" rlp:"-"`
+	}
+	
+	type Transaction struct {
+		data txdata
+		// caches
+		hash atomic.Value
+		size atomic.Value
+		from atomic.Value
+	}
+
+	val := new(Transaction)
+
+	rval := reflect.ValueOf(val)
+	rtyp := rval.Type()
+	typ := rtyp.Elem()
+
+
+	kind := typ.Kind()
+	switch {
+	case typ == rawValueType:
+		t.Log(1)
+	case typ.AssignableTo(reflect.PtrTo(bigInt)):
+		t.Log(2)
+	case typ.AssignableTo(bigInt):
+		t.Log(3)
+	case kind == reflect.Ptr:
+		t.Log(4)
+	case reflect.PtrTo(typ).Implements(decoderInterface):
+		t.Log(5)
+	case isUint(kind):
+		t.Log(6)
+	case kind == reflect.Bool:
+		t.Log(7)
+	case kind == reflect.String:
+		t.Log(8)
+	case kind == reflect.Slice || kind == reflect.Array:
+		t.Log(9)
+	case kind == reflect.Struct:
+		t.Log(10)
+	case kind == reflect.Interface:
+		t.Log(11)
+	default:
+		t.Log(12)
+	}
+
+	
+	//var decoder decoder
+	//var decoderErr error
+	//decoder, decoderErr = makeDecoder(rtyp.Elem(), tags{})
+	//if decoderErr != nil {
+	//	t.Fatal(decoderErr)
+	//}
+	//t.Log(decoder)
+
+
+}
+
+
+
+
+
+func TestMakeStructDecoder(t *testing.T) {
+
+
+	b, err := hexutil.Decode("0xf8688080834c4b4094e99259149c60f7f5fdb5e2b236303dfce23867a08829a2241af62c0000801ca0a0dd5b8c525ab2d66ca7e5723445f749062745a80c697544ecffe3059d381b8fa050921c7cf229e10f7956de0466b64fb300aa84f2fece0ab9fc7a3cc0ba284cc9")
+	if err != nil {
+		t.Fatal(err)
+	}
+	
+	r := bytes.NewReader(b)
+
+	stream := streamPool.Get().(*Stream)
+	defer streamPool.Put(stream)
+
+	stream.Reset(r, uint64(len(b)))
+
+	type txdata struct {
+		AccountNonce uint64          `json:"nonce"    gencodec:"required"`
+		Price        *big.Int        `json:"gasPrice" gencodec:"required"`
+		GasLimit     uint64          `json:"gas"      gencodec:"required"`
+		Recipient    *common.Address `json:"to"       rlp:"nil"` // nil means contract creation
+		Amount       *big.Int        `json:"value"    gencodec:"required"`
+		Payload      []byte          `json:"input"    gencodec:"required"`
+		Pubkey       [33]byte        `json:"pubkey"`		 
+	
+		// Signature values
+		V *big.Int `json:"v" gencodec:"required"`
+		R *big.Int `json:"r" gencodec:"required"`
+		S *big.Int `json:"s" gencodec:"required"`
+	
+		// This is only used when marshaling to JSON.
+		Hash *common.Hash `json:"hash" rlp:"-"`
+	}
+	
+	type Transaction struct {
+		data txdata
+		// caches
+		hash atomic.Value
+		size atomic.Value
+		from atomic.Value
+	}
+
+	val := new(Transaction)
+
+	rval := reflect.ValueOf(val)
+	rtyp := rval.Type()
+	typ := rtyp.Elem()
+
+
+	fields, err := structFields(typ)
+	if err != nil {
+		t.Log(1)
+	}
+	for _, f := range fields {
+		if f.info.decoderErr != nil {
+			t.Log(2)
+		}
+	}
+	dec := func(s *Stream, val reflect.Value) (err error) {
+		if _, err := s.List(); err != nil {
+			return wrapStreamError(err, typ)
+		}
+		for _, f := range fields {
+			err := f.info.decoder(s, val.Field(f.index))
+			if err == EOL {
+				return &decodeError{msg: "too few elements", typ: typ}
+			} else if err != nil {
+				return addErrorContext(err, "."+typ.Field(f.index).Name)
+			}
+		}
+		return wrapStreamError(s.ListEnd(), typ)
+	}
+
+	decoder := dec
+
+	err = decoder(stream, rval.Elem())
+	if err != nil {
+		t.Fatal(err)
+	}
+	//if decoder != nil {
+	//	t.Errorf("decoder is maked")
+	//}
+	
+
+	
+	//var decoder decoder
+	//var decoderErr error
+	//decoder, decoderErr = makeDecoder(rtyp.Elem(), tags{})
+	//if decoderErr != nil {
+	//	t.Fatal(decoderErr)
+	//}
+	//t.Log(decoder)
+
+
+}
+
+
+
 
 func ExampleDecode() {
 	input, _ := hex.DecodeString("C90A1486666F6F626172")
