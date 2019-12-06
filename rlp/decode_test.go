@@ -1062,11 +1062,16 @@ func TestMakeStructDecoder(t *testing.T) {
 	}
 	
 	r := bytes.NewReader(b)
-
+	t.Log(r)
+	
 	stream := streamPool.Get().(*Stream)
+	t.Log(stream)
+	
 	defer streamPool.Put(stream)
+	t.Log(stream)
 
 	stream.Reset(r, uint64(len(b)))
+	t.Log(stream)
 
 	type txdata struct {
 		AccountNonce uint64          `json:"nonce"    gencodec:"required"`
@@ -1095,21 +1100,58 @@ func TestMakeStructDecoder(t *testing.T) {
 	}
 
 	val := new(Transaction)
-
+	t.Log(val)
+	//reflect.Value型のオブジェクトを取得
 	rval := reflect.ValueOf(val)
+	t.Log(rval)
+	
+	//変数の型を取得
 	rtyp := rval.Type()
+	t.Log(rtyp)
+	
+	//Elem()配列の要素の型を返す
 	typ := rtyp.Elem()
+	t.Log(typ)
+	
+	//NumField()は構造体フィールド数を返す
+	t.Log(typ.NumField())
+	
+	//Field(i)はi番目の構造体フィールドを返す
+	//typはreflectのStructField型
+	//type StructField struct {
+	// 	PkgPath   string // 名前が大文字のときは空
+	//	Name      string
+	//	Type      Type
+	//	Tag       string
+	//	Offset    uintptr
+	//	Index     []int
+	//	Anonymous bool
+	//}
+	t.Log(typ.Field(0))
+	t.Log(typ.Field(0).Name)
+	t.Log(typ.Field(0).PkgPath)
+	t.Log(typ.Field(0).Type)
+	t.Log(typ.Field(0).Tag)
+	t.Log(typ.Field(0).Offset)
+	t.Log(typ.Field(0).Index)
+	t.Log(typ.Field(0).Anonymous)
+
 
 
 	fields, err := structFields(typ)
+	t.Log(fields)
 	if err != nil {
-		t.Log(1)
+		t.Fatal(err)
 	}
+
+
 	for _, f := range fields {
 		if f.info.decoderErr != nil {
-			t.Log(2)
+			t.Errorf("err2")
+			//return nil, structFieldError{typ, f.index, f.info.decoderErr}
 		}
 	}
+
 	dec := func(s *Stream, val reflect.Value) (err error) {
 		if _, err := s.List(); err != nil {
 			return wrapStreamError(err, typ)
