@@ -1072,6 +1072,8 @@ func TestMakeStructDecoder(t *testing.T) {
 
 	stream.Reset(r, uint64(len(b)))
 	t.Log(stream)
+	//t.Log(stream.Kind())
+	//t.Log(stream)
 
 	type txdata struct {
 		AccountNonce uint64          `json:"nonce"    gencodec:"required"`
@@ -1080,7 +1082,7 @@ func TestMakeStructDecoder(t *testing.T) {
 		Recipient    *common.Address `json:"to"       rlp:"nil"` // nil means contract creation
 		Amount       *big.Int        `json:"value"    gencodec:"required"`
 		Payload      []byte          `json:"input"    gencodec:"required"`
-		Pubkey       []byte        `json:"pubkey"`		 
+		Pubkey       [33]byte        `json:"pubkey"`		 
 	
 		// Signature values
 		V *big.Int `json:"v" gencodec:"required"`
@@ -1098,6 +1100,8 @@ func TestMakeStructDecoder(t *testing.T) {
 		size atomic.Value
 		from atomic.Value
 	}
+
+	
 
 	val := new(Transaction)
 	t.Log(val)
@@ -1136,7 +1140,7 @@ func TestMakeStructDecoder(t *testing.T) {
 	t.Log(typ.Field(0).Index)
 	t.Log(typ.Field(0).Anonymous)
 
-
+		
 
 	fields, err := structFields(typ)
 	t.Log(fields)
@@ -1169,14 +1173,41 @@ func TestMakeStructDecoder(t *testing.T) {
 
 	decoder := dec
 
+
+	t.Log(stream)
+	_, err = stream.List()
+	if err != nil {
+		t.Log(err)
+	}
+
+	//t.Log(stream.stack[0])
+	
+	t.Log(stream)
+
+	
+	
+	stream.stack[0].size = 0
+	tos := stream.stack[len(stream.stack)-1]
+	t.Log(tos)
+	t.Log(tos.pos)
+	t.Log(tos.size)
+
+	err = stream.ListEnd()
+	if err != nil {
+		t.Log(err)
+	}
+
 	err = decoder(stream, rval.Elem())
 	if err != nil {
-		t.Fatal(err)
+		t.Log(err)
 	}
-	//if decoder != nil {
-	//	t.Errorf("decoder is maked")
-	//}
+
+	err = stream.ListEnd()
+	if err != nil {
+		t.Log(err)
+	}
 	
+
 
 	
 	//var decoder decoder
