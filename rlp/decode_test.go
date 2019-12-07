@@ -1185,17 +1185,13 @@ func TestMakeStructDecoder(t *testing.T) {
 	t.Log(stream)
 
 	
-	
-	stream.stack[0].size = 0
+	//強制パスさせるための代入
+	//stream.stack[0].size = 0
 	tos := stream.stack[len(stream.stack)-1]
 	t.Log(tos)
 	t.Log(tos.pos)
 	t.Log(tos.size)
 
-	err = stream.ListEnd()
-	if err != nil {
-		t.Log(err)
-	}
 
 	err = decoder(stream, rval.Elem())
 	if err != nil {
