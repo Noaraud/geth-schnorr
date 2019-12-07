@@ -1115,7 +1115,11 @@ func TestMakeStructDecoder(t *testing.T) {
 	
 	//Elem()配列の要素の型を返す
 	typ := rtyp.Elem()
-	t.Log(typ)
+	t.Log(typ.Field(0).PkgPath)
+	t.Log(typ.Field(1).PkgPath)
+	t.Log(typ.Field(2).PkgPath)
+	t.Log(typ.Field(3).PkgPath)
+
 	
 	//NumField()は構造体フィールド数を返す
 	t.Log(typ.NumField())
@@ -1175,10 +1179,10 @@ func TestMakeStructDecoder(t *testing.T) {
 
 
 	t.Log(stream)
-	_, err = stream.List()
-	if err != nil {
-		t.Log(err)
-	}
+	//_, err = stream.List()
+	//if err != nil {
+	//	t.Log(err)
+	//}
 
 	//t.Log(stream.stack[0])
 	
@@ -1187,10 +1191,10 @@ func TestMakeStructDecoder(t *testing.T) {
 	
 	//強制パスさせるための代入
 	//stream.stack[0].size = 0
-	tos := stream.stack[len(stream.stack)-1]
-	t.Log(tos)
-	t.Log(tos.pos)
-	t.Log(tos.size)
+	//tos := stream.stack[len(stream.stack)-1]
+	//t.Log(tos)
+	//t.Log(tos.pos)
+	//t.Log(tos.size)
 
 
 	err = decoder(stream, rval.Elem())
