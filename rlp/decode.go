@@ -95,9 +95,9 @@ func DecodeBytes(b []byte, val interface{}) error {
 	if err := stream.Decode(val); err != nil {
 		return err
 	}
-	if r.Len() > 0 {
-		return ErrMoreThanOneValue
-	}
+	//if r.Len() > 0 {
+	//	return ErrMoreThanOneValue
+	//}
 	return nil
 }
 

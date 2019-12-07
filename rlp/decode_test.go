@@ -848,6 +848,8 @@ type txdata struct {
 	
 }
 
+
+
 //rlp.Decodeをテスト
 func TestDecodeSchnorr(t *testing.T) {
 
@@ -884,88 +886,29 @@ func TestDecodeSchnorr(t *testing.T) {
 		t.Fatal(err)
 	}
 	
+	
 	r := bytes.NewReader(b)
+
+	//if r.i >= int64(len(r.s)) {
+	//	return 0
+	//}
+
+	
+	//t.Log(r.i)
 
 	stream := streamPool.Get().(*Stream)
 	defer streamPool.Put(stream)
 	stream.Reset(r, uint64(len(b)))
-	//if err := stream.Decode(val); err != nil {
-	//	t.Fatal(err)
-	//}
-	
-	//以下Decode内での処理のテスト
-	rval := reflect.ValueOf(val)
-	rtyp := rval.Type()
-	
 
-	if rtyp.Kind() != reflect.Ptr {
-		t.Errorf("errNoPointer")
-	}
-
-	if rval.IsNil() {
-		t.Errorf("errDecodeIntoNil")
-	}
-
-	decoder, err := cachedDecoder(rtyp.Elem())
-	if err != nil {
-		t.Errorf("err")
-	}
-
-	//typ := rtyp.Elem()
-
-	//re_cachedType := cachedTypeInfo(rtyp.Elem(), tags{})
-
-	//if len(stream.stack) == 0 {
-	//	t.Errorf("stream.stack length is short")
-	//}
-
-	//tos := stream.stack[len(stream.stack)-1]
-	//if tos.pos != tos.size {
-	//	t.Fatal(tos.pos)
-	//	t.Fatal(tos.size)
-	//}
-	
-
-	
-	//err = stream.ListEnd()
-	//if err != nil {
-	//	t.Fatal(err)
-	//}
-
-
-	//err = wrapStreamError(stream.ListEnd(), typ)
-	//if err != nil {
-	//	t.Fatal(err)
-	//}
-
-	//ListEndErrorのチェック
-	//err = stream.ListEnd() 
-	//if err != nil {
-		//err = wrapStreamError(err, typ)
-	//	t.Fatal(err)
-	//}
-
-	//ListEndの中身の処理のチェック
-	//if len(stream.stack) == 0 {
-		//t.Errorf("1")
-		//return errNotInList
-	//}
-	//stream.stackをみると空になっている
-	//通常のtransactionの場合のstackを確認
-	
-	
-
-
-	err = decoder(stream, rval.Elem())
-	if err != nil {
+	if err := stream.Decode(val); err != nil {
 		t.Fatal(err)
 	}
 
-	
-	
-		
-	
-
+	t.Log(r.Len())
+	//if r.Len() > 0 {
+		//t.Log("hoge")
+		//return ErrMoreThanOneValue
+	//}
 	
 
 
@@ -1202,10 +1145,7 @@ func TestMakeStructDecoder(t *testing.T) {
 		t.Log(err)
 	}
 
-	err = stream.ListEnd()
-	if err != nil {
-		t.Log(err)
-	}
+	
 	
 
 
