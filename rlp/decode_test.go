@@ -999,13 +999,13 @@ func TestMakeDecFunc(t *testing.T) {
 func TestMakeStructDecoder(t *testing.T) {
 
 	//normalTx
-	b, err := hexutil.Decode("0xf8688080834c4b4094e99259149c60f7f5fdb5e2b236303dfce23867a08829a2241af62c0000801ca0a0dd5b8c525ab2d66ca7e5723445f749062745a80c697544ecffe3059d381b8fa050921c7cf229e10f7956de0466b64fb300aa84f2fece0ab9fc7a3cc0ba284cc9")
+	//b, err := hexutil.Decode("0xf8688080834c4b4094e99259149c60f7f5fdb5e2b236303dfce23867a08829a2241af62c0000801ca0a0dd5b8c525ab2d66ca7e5723445f749062745a80c697544ecffe3059d381b8fa050921c7cf229e10f7956de0466b64fb300aa84f2fece0ab9fc7a3cc0ba284cc9")
 	//if err != nil {
 	//	t.Fatal(err)
 	//}
 
 	//schnorrTx
-	//b, err := hexutil.Decode("0xf88a8080834c4b4094b081a3a5b838ac8741426e51f4a8339451cec3ae8829a2241af62c000080a102dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba6592ca0aacaace16017dfc44427266dec0bb71d73118d7f31e24ab70b6a88a3d6c63538a03bebe3ecaa0dec230133331e66d421ffe06c239276d0490888da9496e02284f0")
+	b, err := hexutil.Decode("0xf88a8080834c4b4094b081a3a5b838ac8741426e51f4a8339451cec3ae8829a2241af62c000080a102dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba6592ca0aacaace16017dfc44427266dec0bb71d73118d7f31e24ab70b6a88a3d6c63538a03bebe3ecaa0dec230133331e66d421ffe06c239276d0490888da9496e02284f0")
 	//if err != nil {
 	//	t.Fatal(err)
 	//}
@@ -1137,12 +1137,14 @@ func TestMakeStructDecoder(t *testing.T) {
 	//t.Log(stream.stack[0])
 	
 	t.Log(stream)
-	//stream.schnorr = true
+	stream.schnorr = true
 	t.Log(stream.schnorr)
+	
 
 	
 	//強制パスさせるための代入
 	//stream.stack[0].size = 0
+
 	//tos := stream.stack[len(stream.stack)-1]
 	//t.Log(tos)
 	//t.Log(tos.pos)

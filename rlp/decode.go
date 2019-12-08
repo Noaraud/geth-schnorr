@@ -805,6 +805,8 @@ func (s *Stream) Reset(r io.Reader, inputLimit uint64) {
 	s.size = 0
 	s.kind = -1
 	s.kinderr = nil
+	//schnorr用に設定
+	s.schnorr = true
 	if s.uintbuf == nil {
 		s.uintbuf = make([]byte, 8)
 	}
