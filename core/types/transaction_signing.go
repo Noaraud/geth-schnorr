@@ -167,17 +167,20 @@ func (s EIP155Signer) Sender(tx *Transaction) (common.Address, error) {
 	//	return common.Address{}, ErrInvalidChainId
 	//}
 
-	hoge := big.NewInt(44)
-	if tx.data.V == hoge {
+	//hoge := big.NewInt(44)
+	if tx.data.V != nil {
 		//Schnorrの処理を入れる
-		V := new(big.Int).Sub(tx.data.V, s.chainIdMul)
-		V.Sub(V, big8)
+		//V := new(big.Int).Sub(tx.data.V, s.chainIdMul)
+		//V.Sub(V, big8)
+		
 		return  recoverPlainSchnorr(s.Hash(tx), tx.data.R, tx.data.S, tx.data.Pubkey)
 		//本当はrecoverPlainSchnorr
 	} else {
-		V := new(big.Int).Sub(tx.data.V, s.chainIdMul)
-		V.Sub(V, big8)
-		return recoverPlain(s.Hash(tx), tx.data.R, tx.data.S, V, true)
+		//V := new(big.Int).Sub(tx.data.V, s.chainIdMul)
+		//V.Sub(V, big8)
+		//return recoverPlain(s.Hash(tx), tx.data.R, tx.data.S, V, true)
+		
+		return  recoverPlainSchnorr(s.Hash(tx), tx.data.R, tx.data.S, tx.data.Pubkey)
 	}
 }
 
@@ -316,7 +319,10 @@ func recoverPlainSchnorr(sighash common.Hash, R, S *big.Int, Pubkey [33]byte) (c
 	//Vは使わない
 
 	// 署名r, sをくっつける
+	//r, s := R.Bytes(), S.Bytes()
+
 	r, s := R.Bytes(), S.Bytes()
+
 	sig := [64]byte{}
 	copy(sig[:32], r)
 	copy(sig[32:], s)

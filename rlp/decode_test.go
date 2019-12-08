@@ -837,15 +837,90 @@ type txdata struct {
 	
 	
 	tx := new(Transaction)
-	encodedTx, err := hexutil.Decode("0xf8688080834c4b4094e99259149c60f7f5fdb5e2b236303dfce23867a08829a2241af62c0000801ca0a0dd5b8c525ab2d66ca7e5723445f749062745a80c697544ecffe3059d381b8fa050921c7cf229e10f7956de0466b64fb300aa84f2fece0ab9fc7a3cc0ba284cc9")
+	encodedTx, err := hexutil.Decode("0xf88a8080834c4b4094b081a3a5b838ac8741426e51f4a8339451cec3ae8829a2241af62c000080a102dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba6592ca0aacaace16017dfc44427266dec0bb71d73118d7f31e24ab70b6a88a3d6c63538a03bebe3ecaa0dec230133331e66d421ffe06c239276d0490888da9496e02284f0")
 	if err != nil {
-		t.Fatal(err)
+		t.Log(err)
 	}
 
 	if err := DecodeBytes(encodedTx, tx); err != nil {
-		t.Fatal(err)
+		t.Log(err)
 	}
+	//139が末尾 encodedTxはhexutil.Bytes
+	t.Log(encodedTx[:])
+	//nonce 適当に hexutil.Uint64
+	//t.Log(encodedTx[])
+	//Price 適当に
+
+	//gas 変換必要 hexutil.uint64
+	t.Log(encodedTx[5:8])
+	//to 変換必要 common.Address
+	t.Log(encodedTx[9:29])
+	//value 変換必要 hexutil.Big
+	t.Log(encodedTx[30:38])
+	//payload(data)
+	t.Log(encodedTx[38:40])
+	//Pubkey
+	t.Log(encodedTx[40:73])
+	//署名v 変換必要 hexutil.Big
+	t.Log(encodedTx[73])
+	//署名r 変換必要 hexutil.Big
+	t.Log(encodedTx[75:107])
+	//署名s 変換必要 hexutil.Big
+	t.Log(encodedTx[108:140])
 	
+
+	//gasをtxの形式に変換
+	gas_string := hexutil.Encode(encodedTx[5:8])
+	tx.data.GasLimit, err = hexutil.DecodeUint64(gas_string)
+	if err != nil {
+		t.Log(err)
+	}
+	t.Log(tx.data.GasLimit)
+
+	//toをtxの形式に変換
+	reci_addr := common.BytesToAddress(encodedTx[9:29])
+	tx.data.Recipient = &reci_addr
+	t.Log(tx.data.Recipient)
+
+	//valueをtxの形式に変換
+	value_string := hexutil.Encode(encodedTx[30:38])
+	tx.data.Amount, err = hexutil.DecodeBig(value_string)
+	if err != nil {
+		t.Log(err)
+	}
+	t.Log(tx.data.Amount)
+
+	//PubkeyをTxの形式に変換
+	var	pubkey33 [33]byte
+	copy(pubkey33[:], encodedTx[40:73])
+ 	tx.data.Pubkey = pubkey33
+	t.Log(tx.data.Pubkey)
+
+	//Vをtxの形式に変換
+	var ok bool
+	tx.data.V, ok = new(big.Int).SetString("44", 10)
+	if !ok {
+		t.Log("fatal")
+	}
+	t.Log(tx.data.V)
+
+	//rをTxの形式に変換
+	r_string := hexutil.Encode(encodedTx[75:107])
+	tx.data.R, err = hexutil.DecodeBig(r_string)
+	if err != nil {
+		t.Log(err)
+	}
+	t.Log(tx.data.R)
+
+	//sをtxの形式に変換
+	s_string := hexutil.Encode(encodedTx[108:140])
+	tx.data.S, err = hexutil.DecodeBig(s_string)
+	if err != nil {
+		t.Log(err)
+	}
+	t.Log(tx.data.S)
+
+
 }
 
 
@@ -1137,8 +1212,8 @@ func TestMakeStructDecoder(t *testing.T) {
 	//t.Log(stream.stack[0])
 	
 	t.Log(stream)
-	stream.schnorr = true
-	t.Log(stream.schnorr)
+	//stream.schnorr = true
+	//t.Log(stream.schnorr)
 	
 
 	

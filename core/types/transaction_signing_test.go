@@ -22,29 +22,29 @@ import (
 	"encoding/hex"
 	"github.com/Noaraud/geth-schnorr/common"
 	"github.com/Noaraud/geth-schnorr/crypto"
-	"github.com/Noaraud/geth-schnorr/rlp"
+	//"github.com/Noaraud/geth-schnorr/rlp"
 	"github.com/hbakhtiyor/schnorr"
-	"github.com/btcsuite/btcd/btcec"
-	"crypto/elliptic"
+	//"github.com/btcsuite/btcd/btcec"
+	//"crypto/elliptic"
 	
 )
 
-var (
+//var (
 	// Curve is a KoblitzCurve which implements secp256k1.
-	Curve = btcec.S256()
+//	Curve = btcec.S256()
 	// One holds a big integer of 1
-	One = new(big.Int).SetInt64(1)
+//	One = new(big.Int).SetInt64(1)
 	// Two holds a big integer of 2
-	Two = new(big.Int).SetInt64(2)
+//	Two = new(big.Int).SetInt64(2)
 	// Three holds a big integer of 3
-	Three = new(big.Int).SetInt64(3)
+//	Three = new(big.Int).SetInt64(3)
 	// Four holds a big integer of 4
-	Four = new(big.Int).SetInt64(4)
+//	Four = new(big.Int).SetInt64(4)
 	// Seven holds a big integer of 7
-	Seven = new(big.Int).SetInt64(7)
+//	Seven = new(big.Int).SetInt64(7)
 	// N2 holds a big integer of N-2
-	N2 = new(big.Int).Sub(Curve.N, Two)
-)
+//	N2 = new(big.Int).Sub(Curve.N, Two)
+//)
 
 func TestEIP155Signing(t *testing.T) {
 	key, _ := crypto.GenerateKey()
@@ -164,113 +164,107 @@ func TestChainId(t *testing.T) {
 //2, typesにSchnorr.goを追加
 //3, TestHoge内でPubkeyに直接公開鍵を追加し、格納
 //4, 金曜はドキュメントまとめつつ、SendTransactionがどう動くのかを知りたいかも？
-func TestHoge2(t *testing.T) {
-	key, _ := crypto.GenerateKey()
-	addr := crypto.PubkeyToAddress(key.PublicKey)
-
-	signer := NewEIP155Signer(big.NewInt(18))
-	NonSig := NewTransaction(0, addr, new(big.Int), 0, new(big.Int), nil)
+//func TestHoge2(t *testing.T) {
+//	key, _ := crypto.GenerateKey()
+//	addr := crypto.PubkeyToAddress(key.PublicKey)
+//
+//	signer := NewEIP155Signer(big.NewInt(18))
+//	NonSig := NewTransaction(0, addr, new(big.Int), 0, new(big.Int), nil)
+//	
+//
+//	//----------------------------------Schnorr用Transactionの作成---------
+//
+//
+//	//公開鍵はBitcoinのx圧縮形式(今のところ)
+//	//pk, _ := hex.DecodeString("02DFF1D77F2A671C5F36183726DB2341BE58FEAE1DA2DECED843240F7B502BA659")
+//	
+//	//Schnorr.goのUnmarshalを使って公開鍵(x)を導出
+//	//Px, _ := Unmarshal(Curve, pk)
+//	//t.Log(Px)
+//	//導出したPx(32byte)をTxのPubkeyに格納
+//	Px, err:= hex.DecodeString("DFF1D77F2A671C5F36183726DB2341BE58FEAE1DA2DECED843240F7B502BA659")
+//	if err != nil {
+//		t.Fatal(err)
+//	}
+//
+//	NonSig.data.Pubkey = Px
+//	t.Log(NonSig.data.Pubkey)
+//	tx, err := SignTx(NonSig, signer, key,)
+////	t.Log(tx)
+//
+//	if err != nil {
+//		t.Fatal(err)
+//	}
+//
+//
+//
+//
+//
+//	//このあとやること
+//	//1, Sender内部でSchnorrかそうでないかの見極めをどうするか
+//	// →　どうやらVをyチェックしている関数はない様子
+//	// →　Vのデフォルト値は27 or 28
+//	// →　V = chainID * 2 + 8 + (27 or 28)
+//	// →　Sender内部のCmp()は気になる
+//
+//	//2, Sender内での検証処理追加
+//	//3, Txの署名部分にとりあえず署名ぶち込んで署検証してみる(r, s, v, hash)
+//
+//
+//	from, err := Sender(signer, tx)
+//	if err != nil {
+//		t.Fatal(err)
+//	}
+//	if from != addr {
+//		t.Errorf("exected from and address to be equal. Got %x want %x", from, addr)
+//	}
+//	t.Log(from)
+//	t.Log(tx.data.V)
 	
-
-	//----------------------------------Schnorr用Transactionの作成---------
-
-
-	//公開鍵はBitcoinのx圧縮形式(今のところ)
-	pk, _ := hex.DecodeString("02DFF1D77F2A671C5F36183726DB2341BE58FEAE1DA2DECED843240F7B502BA659")
-	
-	//Schnorr.goのUnmarshalを使って公開鍵(x)を導出
-	Px, _ := Unmarshal(Curve, pk)
-	t.Log(Px)
-	//導出したPx(32byte)をTxのPubkeyに格納
-	NonSig.data.Pubkey = Px
-	t.Log(NonSig.data.Pubkey)
-	tx, err := SignTx(NonSig, signer, key,)
-	t.Log(tx)
-
-	if err != nil {
-		t.Fatal(err)
-	}
+//}
 
 
 
 
 
+//func TestHoge3(t *testing.T) {
+//	key, _ := crypto.GenerateKey()
+//	addr := crypto.PubkeyToAddress(key.PublicKey)
+//
+//	signer := NewEIP155Signer(big.NewInt(18))
+//	NonSig := NewTransaction(0, addr, new(big.Int), 0, new(big.Int), nil)
+//	//----------------------------------Schnorr用Transactionの作成---------
+//	//公開鍵はBitcoinのx圧縮形式(今のところ)
+//	pk, _ := hex.DecodeString("02DFF1D77F2A671C5F36183726DB2341BE58FEAE1DA2DECED843240F7B502BA659")
+//	//Schnorr.goのUnmarshalを使って公開鍵(x)を導出
+//	Px, _ := Unmarshal(Curve, pk)
+//	t.Log(Px)
+//	//導出したPx(32byte)をTxのPubkeyに格納
+//	NonSig.data.Pubkey = Px
+//	t.Log(NonSig.data.Pubkey)
+//	tx, err := SignTx(NonSig, signer, key,)
+//	t.Log(tx)
+//	if err != nil {
+//		t.Fatal(err)
+//	}
 	//このあとやること
 	//1, Sender内部でSchnorrかそうでないかの見極めをどうするか
 	// →　どうやらVをyチェックしている関数はない様子
 	// →　Vのデフォルト値は27 or 28
 	// →　V = chainID * 2 + 8 + (27 or 28)
 	// →　Sender内部のCmp()は気になる
-
 	//2, Sender内での検証処理追加
 	//3, Txの署名部分にとりあえず署名ぶち込んで署検証してみる(r, s, v, hash)
-
-
-	from, err := Sender(signer, tx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if from != addr {
-		t.Errorf("exected from and address to be equal. Got %x want %x", from, addr)
-	}
-	t.Log(from)
-	t.Log(tx.data.V)
-	
-}
-
-
-
-
-
-func TestHoge3(t *testing.T) {
-	key, _ := crypto.GenerateKey()
-	addr := crypto.PubkeyToAddress(key.PublicKey)
-
-	signer := NewEIP155Signer(big.NewInt(18))
-	NonSig := NewTransaction(0, addr, new(big.Int), 0, new(big.Int), nil)
-	
-
-	//----------------------------------Schnorr用Transactionの作成---------
-
-
-	//公開鍵はBitcoinのx圧縮形式(今のところ)
-	pk, _ := hex.DecodeString("02DFF1D77F2A671C5F36183726DB2341BE58FEAE1DA2DECED843240F7B502BA659")
-	
-	//Schnorr.goのUnmarshalを使って公開鍵(x)を導出
-	Px, _ := Unmarshal(Curve, pk)
-	t.Log(Px)
-	//導出したPx(32byte)をTxのPubkeyに格納
-	NonSig.data.Pubkey = Px
-	t.Log(NonSig.data.Pubkey)
-	tx, err := SignTx(NonSig, signer, key,)
-	t.Log(tx)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	//このあとやること
-	//1, Sender内部でSchnorrかそうでないかの見極めをどうするか
-	// →　どうやらVをyチェックしている関数はない様子
-	// →　Vのデフォルト値は27 or 28
-	// →　V = chainID * 2 + 8 + (27 or 28)
-	// →　Sender内部のCmp()は気になる
-
-	//2, Sender内での検証処理追加
-	//3, Txの署名部分にとりあえず署名ぶち込んで署検証してみる(r, s, v, hash)
-
-
-	from, err := Sender(signer, tx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if from != addr {
-		t.Errorf("exected from and address to be equal. Got %x want %x", from, addr)
-	}
-	t.Log(from)
-	t.Log(signer.Hash(tx))
-	
-}
+//	from, err := Sender(signer, tx)
+//	if err != nil {
+//		t.Fatal(err)
+//	}
+//	if from != addr {
+//		t.Errorf("exected from and address to be equal. Got %x want %x", from, addr)
+//	}
+//	t.Log(from)
+//	t.Log(signer.Hash(tx))	
+//}
 
 
 
@@ -316,7 +310,7 @@ func TestRecoverSchnorr(t *testing.T) {
 	  }
 
 	//署名のr, s, v(big.Int)と検証に使う公開鍵(big.Int)をtxにそれぞれ格納
-	NonSigned.data.Pubkey = Px
+	NonSigned.data.Pubkey = publicKey
 	NonSigned.data.R = new(big.Int).SetBytes(signature[:32])
 	NonSigned.data.S = new(big.Int).SetBytes(signature[32:])
 	NonSigned.data.V = big.NewInt(44)
@@ -341,35 +335,35 @@ t.Log(recoveraddr, addr)
 
 
 
-func Unmarshal(curve elliptic.Curve, data []byte) (x, y *big.Int) {
-	byteLen := (curve.Params().BitSize + 7) >> 3
-	if (data[0] &^ 1) != 2 {
-		return
-	}
-	if len(data) != 1+byteLen {
-		return
-	}
-
-	x0 := new(big.Int).SetBytes(data[1 : 1+byteLen])
-	P := curve.Params().P
-	ySq := new(big.Int)
-	ySq.Exp(x0, Three, P)
-	ySq.Add(ySq, Seven)
-	ySq.Mod(ySq, P)
-	y0 := new(big.Int)
-	P1 := new(big.Int).Add(P, One)
-	d := new(big.Int).Mod(P1, Four)
-	P1.Sub(P1, d)
-	P1.Div(P1, Four)
-	y0.Exp(ySq, P1, P)
-
-	if new(big.Int).Exp(y0, Two, P).Cmp(ySq) != 0 {
-		return
-	}
-	if y0.Bit(0) != uint(data[0]&1) {
-		y0.Sub(P, y0)
-	}
-	x, y = x0, y0
-	return
-}
+//func Unmarshal(curve elliptic.Curve, data []byte) (x, y *big.Int) {
+//	byteLen := (curve.Params().BitSize + 7) >> 3
+//	if (data[0] &^ 1) != 2 {
+//		return
+//	}
+//	if len(data) != 1+byteLen {
+//		return
+//	}
+//
+//	x0 := new(big.Int).SetBytes(data[1 : 1+byteLen])
+//	P := curve.Params().P
+//	ySq := new(big.Int)
+//	ySq.Exp(x0, Three, P)
+//	ySq.Add(ySq, Seven)
+//	ySq.Mod(ySq, P)
+//	y0 := new(big.Int)
+//	P1 := new(big.Int).Add(P, One)
+//	d := new(big.Int).Mod(P1, Four)
+//	P1.Sub(P1, d)
+//	P1.Div(P1, Four)
+//	y0.Exp(ySq, P1, P)
+//
+//	if new(big.Int).Exp(y0, Two, P).Cmp(ySq) != 0 {
+//		return
+//	}
+//	if y0.Bit(0) != uint(data[0]&1) {
+//		y0.Sub(P, y0)
+//	}
+//	x, y = x0, y0
+//	return
+//}
 
