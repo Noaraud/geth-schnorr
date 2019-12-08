@@ -329,7 +329,7 @@ func decodeListArray(s *Stream, val reflect.Value, elemdec decoder) error {
 		}
 	}
 	if i < vlen {
-		return &decodeError{msg: "input list has too few elements", typ: val.Type()}
+		return &decodeError{msg: "input list has too few elements Hoge", typ: val.Type()}
 	}
 	return wrapStreamError(s.ListEnd(), val.Type())
 }
