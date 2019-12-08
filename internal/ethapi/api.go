@@ -1500,62 +1500,50 @@ func (s *PublicTransactionPoolAPI) FillTransaction(ctx context.Context, args Sen
 // SendRawTransaction will add the signed transaction to the transaction pool.
 // The sender is responsible for signing the transaction and using the correct nonce.
 func (s *PublicTransactionPoolAPI) SendRawTransaction(ctx context.Context, encodedTx hexutil.Bytes) (common.Hash, error) {
-	tx := new(types.Transaction)
+	//tx := new(types.Transaction)
 	//if err := rlp.DecodeBytes(encodedTx, tx); err != nil {
 	//	return common.Hash{}, errzf
 	//}
-	var err error
-	//以下Txの読み込み
+
+	//gasをtxの形式に変換
 	gas_string := hexutil.Encode(encodedTx[5:8])
-	tx.data.GasLimit, err = hexutil.DecodeUint64(gas_string)
-	//if err != nil {
-	//	t.Log(err)
-	//}
-	//t.Log(tx.data.GasLimit)
+	GasLimit, err := hexutil.DecodeUint64(gas_string)
+	
 
 	//toをtxの形式に変換
 	reci_addr := common.BytesToAddress(encodedTx[9:29])
-	tx.data.Recipient = &reci_addr
-	//t.Log(tx.data.Recipient)
+	//tx.data.Recipient = &reci_addr
+	
 
 	//valueをtxの形式に変換
 	value_string := hexutil.Encode(encodedTx[30:38])
-	tx.data.Amount, err = hexutil.DecodeBig(value_string)
-	//if err != nil {
-	//	t.Log(err)
-	//}
-	//t.Log(tx.data.Amount)
+	Amount, err := hexutil.DecodeBig(value_string)
+	
 
 	//PubkeyをTxの形式に変換
 	var	pubkey33 [33]byte
 	copy(pubkey33[:], encodedTx[40:73])
- 	tx.data.Pubkey = pubkey33
-	//t.Log(tx.data.Pubkey)
+ 	//tx.data.Pubkey = pubkey33
+	
 
 	//Vをtxの形式に変換
 	var ok bool
-	tx.data.V, ok = new(big.Int).SetString("44", 10)
-	//if !ok {
-	//	t.Log("fatal")
-	//}
-	//t.Log(tx.data.V)
+	V, ok := new(big.Int).SetString("44", 10)
+	if !ok {
+		return fmt.Printf("not ok")
+	}
+	
 
 	//rをTxの形式に変換
 	r_string := hexutil.Encode(encodedTx[75:107])
-	tx.data.R, err = hexutil.DecodeBig(r_string)
-	//if err != nil {
-	//	t.Log(err)
-	//}
-	//t.Log(tx.data.R)
+	R, err := hexutil.DecodeBig(r_string)
+	
 
 	//sをtxの形式に変換
 	s_string := hexutil.Encode(encodedTx[108:140])
-	tx.data.S, err = hexutil.DecodeBig(s_string)
-	//if err != nil {
-	//	t.Log(err)
-	//}
-	//t.Log(tx.data.S)
+	S, err := hexutil.DecodeBig(s_string)
 
+	tx := NewSchnorrTransaction(0, &reci_addr, Amount, GasLimit, new(big.Int), nil, pubkey33, V, R, S)
 
 	return SubmitTransaction(ctx, s.b, tx)
 }
