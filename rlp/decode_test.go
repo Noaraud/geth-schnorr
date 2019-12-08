@@ -1130,6 +1130,8 @@ func TestMakeStructDecoder(t *testing.T) {
 	//t.Log(stream.stack[0])
 	
 	t.Log(stream)
+	stream.schnorr = true
+	t.Log(stream.schnorr)
 
 	
 	//強制パスさせるための代入
