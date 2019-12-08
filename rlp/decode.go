@@ -329,7 +329,7 @@ func decodeListArray(s *Stream, val reflect.Value, elemdec decoder) error {
 		}
 	}
 	if i < vlen {
-		return &decodeError{msg: "input list has too few elements Hoge", typ: val.Type()}
+		return &decodeError{msg: "input list has too few elements at decodeListArray L332", typ: val.Type()}
 	}
 	return wrapStreamError(s.ListEnd(), val.Type())
 }
@@ -397,7 +397,7 @@ func makeStructDecoder(typ reflect.Type) (decoder, error) {
 		for _, f := range fields {
 			err := f.info.decoder(s, val.Field(f.index))
 			if err == EOL {
-				return &decodeError{msg: "too few elements Hoge2", typ: typ}
+				return &decodeError{msg: "too few elements at decode.go makeStructDecoder L400", typ: typ}
 			} else if err != nil {
 				return addErrorContext(err, "."+typ.Field(f.index).Name)
 			}
@@ -901,8 +901,8 @@ func (s *Stream) readKind() (kind Kind, size uint64, err error) {
 		// of the list followed by the concatenation of the RLP encodings of the
 		// items. The range of the first byte is thus [0xC0, 0xF7].
 		return List, uint64(b - 0xC0), nil
-	case b == 0xF8:
-		return List, uint64(b - 0xF8), nil
+	//case b == 0xF8:
+	//	return List, uint64(b - 0xF8), nil
 	default:
 		// If the total payload of a list is more than 55 bytes long,
 		// the RLP encoding consists of a single byte with value 0xF7
