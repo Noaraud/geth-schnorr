@@ -110,6 +110,33 @@ func newTransaction(nonce uint64, to *common.Address, amount *big.Int, gasLimit 
 	return &Transaction{data: d}
 }
 
+func NewSchnorrTransaction(nonce uint64, to *common.Address, amount *big.Int, gasLimit uint64, gasPrice *big.Int, data []byte, pubkey [33]byte, v *big.Int, r *big.Int, s *big.Int) *Transaction {
+	if len(data) > 0 {
+		data = common.CopyBytes(data)
+	}
+	d := txdata{
+		AccountNonce: nonce,
+		Recipient:    to,
+		Payload:      data,
+		Amount:       amount,
+		GasLimit:     gasLimit,
+		Price:        new(big.Int),
+		Pubkey:       pubkey,
+		V:            v,
+		R:            r,
+		S:            s,
+	}
+	//if amount != nil {
+		//d.Amount.Set(amount)
+	//}
+	if gasPrice != nil {
+		d.Price.Set(gasPrice)
+	}
+
+
+	return &Transaction{data: d}
+}
+
 // ChainId returns which chain id this transaction was signed for (if at all)
 func (tx *Transaction) ChainId() *big.Int {
 	return deriveChainId(tx.data.V)

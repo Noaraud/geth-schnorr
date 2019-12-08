@@ -1504,7 +1504,7 @@ func (s *PublicTransactionPoolAPI) SendRawTransaction(ctx context.Context, encod
 	//if err := rlp.DecodeBytes(encodedTx, tx); err != nil {
 	//	return common.Hash{}, errzf
 	//}
-
+	var err error
 	//以下Txの読み込み
 	gas_string := hexutil.Encode(encodedTx[5:8])
 	tx.data.GasLimit, err = hexutil.DecodeUint64(gas_string)

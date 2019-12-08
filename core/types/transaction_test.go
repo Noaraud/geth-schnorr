@@ -26,6 +26,7 @@ import (
 	"github.com/Noaraud/geth-schnorr/common"
 	"github.com/Noaraud/geth-schnorr/crypto"
 	"github.com/Noaraud/geth-schnorr/rlp"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 // The values in those tests are from the Transaction Tests
@@ -59,6 +60,58 @@ func TestTransactionSigHash(t *testing.T) {
 	if homestead.Hash(rightvrsTx) != common.HexToHash("fe7a79529ed5f7c3375d06b26b186a8644e0e16c373d7a12be41c62d6042b77a") {
 		t.Errorf("RightVRS transaction hash mismatch, got %x", rightvrsTx.Hash())
 	}
+}
+
+func TestMakeSchnorrTransaction(t *testing.T) {
+	encodedTx, err := hexutil.Decode("0xf88a8080834c4b4094b081a3a5b838ac8741426e51f4a8339451cec3ae8829a2241af62c000080a102dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba6592ca0aacaace16017dfc44427266dec0bb71d73118d7f31e24ab70b6a88a3d6c63538a03bebe3ecaa0dec230133331e66d421ffe06c239276d0490888da9496e02284f0")
+	if err != nil {
+		t.Log(err)
+	}
+
+	
+
+	//gasをtxの形式に変換
+	gas_string := hexutil.Encode(encodedTx[5:8])
+	GasLimit, err := hexutil.DecodeUint64(gas_string)
+	
+
+	//toをtxの形式に変換
+	reci_addr := common.BytesToAddress(encodedTx[9:29])
+	//tx.data.Recipient = &reci_addr
+	
+
+	//valueをtxの形式に変換
+	value_string := hexutil.Encode(encodedTx[30:38])
+	Amount, err := hexutil.DecodeBig(value_string)
+	
+
+	//PubkeyをTxの形式に変換
+	var	pubkey33 [33]byte
+	copy(pubkey33[:], encodedTx[40:73])
+ 	//tx.data.Pubkey = pubkey33
+	
+
+	//Vをtxの形式に変換
+	var ok bool
+	V, ok := new(big.Int).SetString("44", 10)
+	if !ok {
+		t.Log("not ok")
+	}
+	
+
+	//rをTxの形式に変換
+	r_string := hexutil.Encode(encodedTx[75:107])
+	R, err := hexutil.DecodeBig(r_string)
+	
+
+	//sをtxの形式に変換
+	s_string := hexutil.Encode(encodedTx[108:140])
+	S, err := hexutil.DecodeBig(s_string)
+	
+
+
+	tx := NewSchnorrTransaction(0, &reci_addr, Amount, GasLimit, new(big.Int), nil, pubkey33, V, R, S)
+	t.Log(tx)
 }
 
 func TestTransactionEncode(t *testing.T) {
