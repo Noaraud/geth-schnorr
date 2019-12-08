@@ -131,7 +131,7 @@ func wrapStreamError(err error, typ reflect.Type) error {
 	case errUintOverflow:
 		return &decodeError{msg: "input string too long", typ: typ}
 	case errNotAtEOL:
-		return &decodeError{msg: "input list has too many elements", typ: typ}
+		return &decodeError{msg: "input list has too many elements at decode.go L134", typ: typ}
 	}
 	return err
 }
