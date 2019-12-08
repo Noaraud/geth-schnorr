@@ -92,6 +92,7 @@ func DecodeBytes(b []byte, val interface{}) error {
 	defer streamPool.Put(stream)
 
 	stream.Reset(r, uint64(len(b)))
+	stream.schnorr = true
 	if err := stream.Decode(val); err != nil {
 		return err
 	}
@@ -806,7 +807,7 @@ func (s *Stream) Reset(r io.Reader, inputLimit uint64) {
 	s.kind = -1
 	s.kinderr = nil
 	//schnorr用に設定
-	s.schnorr = true
+	//s.schnorr = true
 	if s.uintbuf == nil {
 		s.uintbuf = make([]byte, 8)
 	}
