@@ -1508,9 +1508,9 @@ func (s *PublicTransactionPoolAPI) SendRawTransaction(ctx context.Context, encod
 	//以下Txの読み込み
 	gas_string := hexutil.Encode(encodedTx[5:8])
 	tx.data.GasLimit, err = hexutil.DecodeUint64(gas_string)
-	if err != nil {
-		t.Log(err)
-	}
+	//if err != nil {
+	//	t.Log(err)
+	//}
 	//t.Log(tx.data.GasLimit)
 
 	//toをtxの形式に変換
@@ -1521,9 +1521,9 @@ func (s *PublicTransactionPoolAPI) SendRawTransaction(ctx context.Context, encod
 	//valueをtxの形式に変換
 	value_string := hexutil.Encode(encodedTx[30:38])
 	tx.data.Amount, err = hexutil.DecodeBig(value_string)
-	if err != nil {
-		t.Log(err)
-	}
+	//if err != nil {
+	//	t.Log(err)
+	//}
 	//t.Log(tx.data.Amount)
 
 	//PubkeyをTxの形式に変換
@@ -1535,25 +1535,25 @@ func (s *PublicTransactionPoolAPI) SendRawTransaction(ctx context.Context, encod
 	//Vをtxの形式に変換
 	var ok bool
 	tx.data.V, ok = new(big.Int).SetString("44", 10)
-	if !ok {
-		t.Log("fatal")
-	}
+	//if !ok {
+	//	t.Log("fatal")
+	//}
 	//t.Log(tx.data.V)
 
 	//rをTxの形式に変換
 	r_string := hexutil.Encode(encodedTx[75:107])
 	tx.data.R, err = hexutil.DecodeBig(r_string)
-	if err != nil {
-		t.Log(err)
-	}
+	//if err != nil {
+	//	t.Log(err)
+	//}
 	//t.Log(tx.data.R)
 
 	//sをtxの形式に変換
 	s_string := hexutil.Encode(encodedTx[108:140])
 	tx.data.S, err = hexutil.DecodeBig(s_string)
-	if err != nil {
-		t.Log(err)
-	}
+	//if err != nil {
+	//	t.Log(err)
+	//}
 	//t.Log(tx.data.S)
 
 
